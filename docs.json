@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Display Name Styles",
-  "theme": "maple",
+  "theme": "luma",
   "colors": {
-    "primary": "#0000EE",
-    "light": "#6699FF",
-    "dark": "#000080"
+    "primary": "#5865F2",
+    "light": "#7983F5",
+    "dark": "#4752C4"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -25,20 +25,17 @@
     ]
   },
   "appearance": {
-    "default": "light"
+    "default": "dark",
+    "strict": false
   },
   "background": {
-    "decoration": "windows"
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#1E1F22"
+    }
   },
   "fonts": {
-    "heading": {
-      "family": "Tinos",
-      "weight": 700
-    },
-    "body": {
-      "family": "Tinos",
-      "weight": 400
-    }
+    "family": "Noto Sans"
   },
   "styling": {
     "codeblocks": "dark"
