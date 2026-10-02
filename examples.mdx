@@ -29,11 +29,7 @@ await client.rest.patch(Routes.guildMember(guildId), { body: {
 
 ## Applying Styles Across Multiple Guilds
 
-When rolling out a style change across every guild your bot belongs to, rate limiting is your primary concern. The safe pattern is to process guilds sequentially with a generous delay between each request rather than firing them in parallel.
-
-<Warning>
-  Apply at a maximum rate of **one guild per 10 minutes**. Sending requests faster has been observed to trigger silent failures.
-</Warning>
+When rolling out a style change across every guild your bot belongs to, process guilds sequentially with a short delay between requests rather than firing them in parallel. The discord.js REST client also handles `429` rate limit responses for you.
 
 <CodeGroup>
 ```js applyToAllGuilds.js
@@ -50,13 +46,13 @@ async function applyToAllGuilds(client) {
       console.warn(`Skipped guild ${guildId}: ${err.message}`);
     }
 
-    // Pace at one guild per 10 minutes to avoid rate limits
-    await sleep(10 * 60 * 1000);
+    // Small delay between guilds to avoid request bursts
+    await sleep(2000);
   }
 }
 ```
 </CodeGroup>
 
 <Note>
-  See [Gotchas](/gotchas) for a full list of non-obvious behaviors including caching strategy, retry timing, and how to handle guild overrides.
+  See [Gotchas](/gotchas) for other non-obvious behaviors, such as per-guild scoping and response verification.
 </Note>

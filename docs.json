@@ -1,16 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Display Name Styles (Unofficial)",
-  "theme": "luma",
+  "name": "Display Name Styles",
+  "theme": "maple",
   "colors": {
-    "primary": "#5865F2",
-    "light": "#7983F5",
-    "dark": "#4752C4"
+    "primary": "#0000EE",
+    "light": "#6699FF",
+    "dark": "#000080"
   },
   "favicon": "/favicon.svg",
-  "banner": {
-    "content": "Unofficial documentation. Not affiliated with Discord. May break without notice."
-  },
   "navigation": {
     "groups": [
       {
@@ -26,5 +23,24 @@
         "pages": ["examples"]
       }
     ]
+  },
+  "appearance": {
+    "default": "light"
+  },
+  "background": {
+    "decoration": "windows"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Tinos",
+      "weight": 700
+    },
+    "body": {
+      "family": "Tinos",
+      "weight": 400
+    }
+  },
+  "styling": {
+    "codeblocks": "dark"
   }
 }
