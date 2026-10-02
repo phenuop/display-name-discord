@@ -138,6 +138,55 @@ export const RequestMaker = () => {
       "  -d '" + inline + "'"
   }[lang];
 
+  const KEYWORDS = {
+    js: ["const", "let", "async", "await", "function", "return", "require", "new", "throw", "if"],
+    ts: ["const", "let", "async", "await", "function", "return", "import", "from", "interface", "as", "new", "throw", "if"],
+    py: ["import", "def", "return", "if", "for", "in", "not", "and", "or"],
+    curl: [],
+    json: []
+  }[lang];
+  const TYPES = ["number", "string", "Promise", "Client", "DisplayNameStyles", "Routes"];
+  const COLORS = {
+    str: "#A5D6FF",
+    num: "#79C0FF",
+    kw: "#FF7B72",
+    lit: "#79C0FF",
+    key: "#7EE787",
+    type: "#FFA657",
+    fn: "#D2A8FF",
+    flag: "#FFA657",
+    punct: "#8B949E"
+  };
+  const tokenRe = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|f"(?:[^"\\]|\\.)*"|\b\d+\b|\b[A-Za-z_][A-Za-z0-9_]*\b|\s-[A-Za-z]\b|[{}()[\];,.:])/g;
+  const highlight = (src) => {
+    const out = [];
+    let last = 0;
+    let m;
+    let i = 0;
+    tokenRe.lastIndex = 0;
+    while ((m = tokenRe.exec(src)) !== null) {
+      if (m.index > last) out.push(src.slice(last, m.index));
+      const t = m[0];
+      const after = src.slice(tokenRe.lastIndex);
+      let color = null;
+      if (/^f?["']/.test(t)) {
+        color = /^\s*:/.test(after) ? COLORS.key : COLORS.str;
+      } else if (/^\d+$/.test(t)) color = COLORS.num;
+      else if (["null", "None", "true", "false", "True", "False"].includes(t)) color = COLORS.lit;
+      else if (KEYWORDS.includes(t)) color = COLORS.kw;
+      else if (TYPES.includes(t)) color = COLORS.type;
+      else if (/^\s-[A-Za-z]$/.test(t)) color = COLORS.flag;
+      else if (lang === "curl" && t === "curl") color = COLORS.fn;
+      else if (/^[A-Za-z_]/.test(t) && /^\s*\(/.test(after)) color = COLORS.fn;
+      else if (/^[A-Za-z_]/.test(t) && /^\s*[:=]/.test(after) && lang !== "py" && /^\s*:/.test(after)) color = COLORS.key;
+      else if (/^[{}()[\];,.:]$/.test(t)) color = COLORS.punct;
+      out.push(color ? <span key={i++} style={{ color }}>{t}</span> : t);
+      last = tokenRe.lastIndex;
+    }
+    if (last < src.length) out.push(src.slice(last));
+    return out;
+  };
+
   const copy = () => {
     navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
@@ -284,7 +333,7 @@ export const RequestMaker = () => {
             {copied ? "Copied!" : "Copy"}
           </button>
         </div>
-        <pre style={Object.assign({ margin: 0, padding: 16, overflowX: "auto", color: "#DBDEE1", background: "#111214", whiteSpace: "pre", lineHeight: 1.6 }, S.mono, { fontSize: 13 })}>{code}</pre>
+        <pre style={Object.assign({ margin: 0, padding: 16, overflowX: "auto", color: "#DBDEE1", background: "#111214", whiteSpace: "pre", lineHeight: 1.6 }, S.mono, { fontSize: 13 })}>{highlight(code)}</pre>
       </div>
     </div>
   );
