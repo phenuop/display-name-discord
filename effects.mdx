@@ -1,28 +1,35 @@
 ---
-title: "Discord Bot Display Name Effect IDs: Full Reference"
+title: "Discord Bot Display Name Effect IDs: Tested Reference"
 sidebarTitle: "Effects"
-description: "Effect IDs for the display_name_effect_id field: Solid (1) through Glow (6), plus the unconfirmed ID 7 that may be Gummy or Prism."
+description: "Tested effect IDs for display_name_effect_id: Solid (1) through Glow (6) save for bots, while Prism (7) and Gummy (8) are silently dropped."
 ---
 
-The `display_name_effect_id` field accepts an integer that controls how Discord renders the colors applied to your bot's display name. Effects range from a flat Solid fill to styles like Neon and Glow.
+The `display_name_effect_id` field accepts an integer that controls how Discord renders the colors applied to your bot's display name. Effects 1 to 6 work for bots. Prism and Gummy exist but are not available to bots.
 
 ---
 
 ## Effect IDs
 
-| ID | Effect | Notes |
-| --- | --- | --- |
-| 1  | Solid        | Flat fill, single color       |
-| 2  | Gradient     | Smooth blend between colors   |
-| 3  | Neon         | Glowing neon edge             |
-| 4  | Toon         | Bold cartoon-style outline    |
-| 5  | Pop          | High-contrast pop art style   |
-| 6  | Glow         | Soft ambient glow             |
-| 7 | Gummy/Prism \* | Unconfirmed |
+Tested on 1 October 2026 against API v10.
 
-\* Effect ID 7 has been observed, but whether it is named "Gummy" or "Prism" is unconfirmed. Treat it as experimental.
+| ID | Effect | Client Colors | Result |
+| --- | --- | --- | --- |
+| 0 |  |  | Rejected (`400 ENUM_TYPE_COERCE`) |
+| 1 | Solid | 1 | Saved |
+| 2 | Gradient | 1 to 5 | Saved |
+| 3 | Neon | 1 | Saved |
+| 4 | Toon | 1 | Saved |
+| 5 | Pop | 1 | Saved |
+| 6 | Glow | 1 to 5 | Saved |
+| 7 | Prism |  | Dropped \* |
+| 8 | Gummy |  | Dropped \* |
+| 9+ |  |  | Rejected (`400 ENUM_TYPE_COERCE`) |
 
-When using effect ID 2 (Gradient) or effect ID 7, pass multiple color stops in `display_name_colors`. See [Colors](/colors) for gradient examples.
+\* Dropped means Discord returns `200` but keeps the previous style. Prism and Gummy are not available to bots.
+
+"Client Colors" is how many colors the Discord client uses for that effect. The API accepts 1 to 5 colors on every effect from 1 to 6, even Solid.
+
+For multi-color styles, use effect `2` (Gradient) or `6` (Glow). See [Colors](/colors) for gradient examples.
 
 ---
 

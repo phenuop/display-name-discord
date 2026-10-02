@@ -1,16 +1,22 @@
 ---
 title: "Non-Obvious Discord Bot Display Name Style Behaviors"
 sidebarTitle: "Gotchas"
-description: "Known non-obvious behaviors with Discord bot Display Name Styles: HTTP 200 is not confirmation, per-guild scoping, and standard rate limits to respect."
+description: "Tested gotchas for bot Display Name Styles: 200 is not proof, all three fields are required, it only works per guild, and styles skip chat messages."
 ---
 
-Several behaviors of the Display Name Styles API are non-obvious. The feature is reverse-engineered by the community and not documented by Discord, so read this page before deploying to avoid silent failures or styles that appear to apply but are discarded.
+Several behaviors of the Display Name Styles API are non-obvious. The findings below come from testing on 1 October 2026 with a live bot, API v10, and 160 requests. Discord does not document this feature and can change it.
 
 ---
 
 ## HTTP 200 Is Not Confirmation
 
-An HTTP 200 response does not mean the style was applied. Discord may accept the request but ignore the style fields.
+Discord often returns `200` while keeping the old style. Results fall into three groups:
+
+| Result | Meaning |
+| --- | --- |
+| Saved | Discord kept exactly what was sent. |
+| Dropped | `200` reply, but the style stayed as it was. |
+| Rejected | Error reply. |
 
 <Warning>
   Always read `display_name_styles` from the response and compare it against what you sent.
@@ -18,12 +24,60 @@ An HTTP 200 response does not mean the style was applied. Discord may accept the
 
 ---
 
-## Per-Guild, Not Global
+## Send All Three Fields Together
 
-Display Name Styles are scoped per guild. The endpoint is `/guilds/{guild_id}/members/@me`, so you must send a separate PATCH request for each guild where you want a style. There is no global style setting.
+Sending only one or two of the style fields is dropped. Starting from a full style (Modern, Toon, `15777856`):
+
+| Request | Result |
+| --- | --- |
+| Only font | Dropped |
+| Only effect | Dropped |
+| Only colors | Dropped |
+| Font and effect, no colors | Dropped |
+| `display_name_font_id: null` on its own | Dropped (doesn't clear) |
+| `display_name_colors: []` on its own | Dropped (doesn't clear) |
+| All three `null` | Cleared. `display_name_styles` becomes `null`. |
+| All three `0` / `[]` | Rejected (`400 ENUM_TYPE_COERCE`) |
+
+---
+
+## Per-Guild Only
+
+Styles only work on `PATCH /guilds/{guild_id}/members/@me`. The same fields on `PATCH /users/@me` return `200` and save nothing for bots, even invalid values like font `999`. Send a separate request for each guild.
+
+---
+
+## Some Fonts and Effects Are Not Available to Bots
+
+Fonts 13 to 17 (including Monkey Bars, Mainframe, Headbang, and Journal) and effects 7 (Prism) and 8 (Gummy) are dropped for bots. A dropped font or effect, or a partial body, is what causes silent drops. See [Fonts](/fonts) and [Effects](/effects).
+
+---
+
+## Nicknames Are Fine
+
+A nickname and a style can be set in the same request. Discord applies a style on top of a guild nickname without complaint.
 
 ---
 
 ## Rate Limits
 
-Like other Discord API endpoints, this endpoint is rate limited. Respect the standard rate limit headers and `429` responses, and avoid sending large bursts of requests when applying styles across many guilds.
+| Header | Observed Value |
+| --- | --- |
+| x-ratelimit-limit | `20` |
+| x-ratelimit-scope | `user` |
+| x-ratelimit-reset-after | `20` to about `300` seconds |
+
+Going over the limit returns a normal `429` with `retry_after`. It does not cause silent drops. 20 quick changes in a row worked. Pacing a rollout across many guilds is sensible but not required by Discord.
+
+---
+
+## Where Styles Show
+
+| Location | Shows Style |
+| --- | --- |
+| Bot profile popout in that guild (desktop) | Yes |
+| Name above the bot's chat messages | No, stays plain |
+| Member list | Not checked yet |
+| Mobile apps | Not checked yet |
+
+A likely reason (not confirmed) is that chat draws a user's account-wide style, which a bot can't have, while the profile reads the guild membership.

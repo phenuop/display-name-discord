@@ -9,18 +9,30 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "groups": [
+    "pages": [
       {
         "group": "Overview",
-        "pages": ["index", "introduction", "gotchas"]
+        "pages": [
+          "index",
+          "introduction",
+          "gotchas"
+        ]
       },
       {
         "group": "API Reference",
-        "pages": ["endpoint", "fonts", "effects", "colors"]
+        "pages": [
+          "endpoint",
+          "fonts",
+          "effects",
+          "colors"
+        ]
       },
       {
         "group": "Examples",
-        "pages": ["examples"]
+        "pages": [
+          "examples",
+          "credits"
+        ]
       }
     ]
   },

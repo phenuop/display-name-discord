@@ -1,32 +1,45 @@
 ---
-title: "Discord Bot Display Name Font IDs: Full Reference"
+title: "Discord Bot Display Name Font IDs: Tested Reference"
 sidebarTitle: "Fonts"
-description: "All 12 known font IDs for the display_name_font_id field, from Sakura (3) to Journal (16). IDs are not sequential, so look up each font's exact ID."
+description: "Tested font IDs for display_name_font_id: which IDs save, which are dropped for bots, and which are rejected. IDs are not in name order, so check each one."
 ---
 
-The `display_name_font_id` field accepts an integer ID that controls which typeface Discord renders for your bot's display name in a guild. The IDs below come from Discord's own font list.
+The `display_name_font_id` field accepts an integer ID that controls which typeface Discord renders for your bot's display name in a guild. Names come from Discord's own client font list. The IDs are not in name order, and not every valid ID is available to bots.
 
 ---
 
 ## Font IDs
 
-| ID | Font |
-| --- | --- |
-| 3 | Sakura |
-| 4 | Jellybean |
-| 6 | Modern |
-| 7 | Medieval |
-| 8 | 8Bit |
-| 10 | Vampyre |
-| 11 | gg sans |
-| 12 | Tempo |
-| 13 | Monkey Bars |
-| 14 | Mainframe |
-| 15 | Headbang |
-| 16 | Journal |
+Tested on 1 October 2026 against API v10.
+
+| ID | Font | Internal Name | Result |
+| --- | --- | --- | --- |
+| 0 |  |  | Rejected (`400 ENUM_TYPE_COERCE`) |
+| 1 | (no name) \* |  | Saved |
+| 2 | (no name) \* |  | Saved |
+| 3 | Sakura | `CHERRY_BOMB` (Cherry Bomb One) | Saved |
+| 4 | Jellybean | `CHICLE` (Chicle) | Saved |
+| 5 | (no name) \* |  | Saved |
+| 6 | Modern | `MUSEO_MODERNO` (MuseoModerno) | Saved |
+| 7 | Medieval | `NEO_CASTEL` | Saved |
+| 8 | 8Bit | `PIXELIFY` (Pixelify Sans) | Saved |
+| 9 | (no name) \* |  | Saved |
+| 10 | Vampyre | `SINISTRE` | Saved |
+| 11 | gg sans | `DEFAULT` (Discord's normal font) | Saved |
+| 12 | Tempo | `ZILLA_SLAB` (Zilla Slab) | Saved |
+| 13 | Monkey Bars |  | Dropped \*\* |
+| 14 | Mainframe |  | Dropped \*\* |
+| 15 | Headbang |  | Dropped \*\* |
+| 16 | Journal |  | Dropped \*\* |
+| 17 | (no name) |  | Dropped \*\* |
+| 18+ |  |  | Rejected (`400 ENUM_TYPE_COERCE`) |
+
+\* IDs 1, 2, 5, and 9 save but are not in Discord's font list. How they render has not been checked.
+
+\*\* Dropped means Discord returns `200` but keeps the previous style. Fonts 13 to 16 are valid but not available to bots.
 
 <Warning>
-  Font IDs are not sequential. IDs 1, 2, 5, and 9 do not appear in Discord's list. An unrecognized ID may cause the style to silently not apply, so verify by reading `display_name_styles` from the response.
+  Using a dropped font causes the whole style to silently not apply. Always read `display_name_styles` from the response to confirm what Discord kept.
 </Warning>
 
 ---

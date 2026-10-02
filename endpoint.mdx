@@ -18,9 +18,15 @@ Content-Type: application/json
 
 | Field | Type | Description |
 | --- | --- | --- |
-| display_name_font_id | ?integer | Font ID to apply. See [Fonts](/fonts). `null` clears it. |
-| display_name_effect_id | ?integer | Effect ID to apply. See [Effects](/effects). `null` clears it. |
-| display_name_colors | ?array of integers | Decimal RGB colors. Pass one value for a solid color, or up to 5 stops for gradients. See [Colors](/colors). `null` clears it. |
+| display_name_font_id | ?integer | Font ID to apply. See [Fonts](/fonts). |
+| display_name_effect_id | ?integer | Effect ID to apply. See [Effects](/effects). |
+| display_name_colors | ?array of integers | 1 to 5 decimal RGB colors. See [Colors](/colors). |
+
+<Warning>
+  Always send all three fields together. Sending only one or two is silently dropped. To clear a style, set all three to `null`.
+</Warning>
+
+A nickname (`nick`) can be set in the same request.
 
 ---
 
@@ -94,11 +100,15 @@ Pass `null` for all three fields.
 
 ---
 
-## Open Questions
+## Errors
 
-The following behaviors are not yet confirmed by community testing:
+| Error | Cause |
+| --- | --- |
+| `400 ENUM_TYPE_COERCE` | Font or effect ID out of range (`0`, font `18+`, effect `9+`), or all three fields set to `0` / `[]`. |
+| `400 BASE_TYPE_MAX_LENGTH` | More than 5 colors. |
+| `400 NUMBER_TYPE_COERCE` | A hex string such as `"#ff0000"` in `display_name_colors`. |
+| `400 BASE_TYPE_REQUIRED` | `null` inside the colors array. |
+| `500 Internal Server Error` | A negative color such as `-1`. |
+| `429` | Rate limited. Wait for `retry_after`. See [Gotchas](/gotchas#rate-limits). |
 
-- The maximum number of elements in the `colors` array.
-- Whether effect ID 7 is "Gummy" or "Prism".
-- Whether hex color strings are accepted in place of decimal integers.
-- The exact rate limit response headers.
+The `PATCH /users/@me` endpoint accepts the same fields and returns `200`, but saves nothing for bots.
