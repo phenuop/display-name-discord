@@ -1,0 +1,93 @@
+---
+title: "Code Examples: Setting and Clearing Display Name Styles"
+sidebarTitle: "Examples"
+description: "JavaScript code examples using discord.js REST client to set and clear bot Display Name Styles per guild, including response verification."
+---
+
+The examples below use the discord.js REST client (`client.rest`) and `Routes.guildMember` to set and clear Display Name Styles. Both patterns are drop-in — replace the font, effect, and color values with your desired IDs from the [Fonts](/fonts), [Effects](/effects), and [Colors](/colors) references.
+
+## Setting a Style
+
+After patching, you should always verify the response `display_name_styles` matches what you sent, because HTTP 200 alone does not guarantee the style was applied.
+
+<CodeGroup>
+```js setStyle.js
+const sig = (s) =>
+  s ? `${s.font_id}:${s.effect_id}:${(s.colors || []).join(",")}` : "";
+
+async function setStyle(client, guildId) {
+  const body = {
+    display_name_font_id: 6,   // Medieval
+    display_name_effect_id: 4, // Toon
+    display_name_colors: [15777856],
+  };
+
+  const member = await client.rest.patch(
+    Routes.guildMember(guildId),
+    { body }
+  );
+
+  const expected = sig({ font_id: 6, effect_id: 4, colors: [15777856] });
+  const actual = sig(member?.display_name_styles);
+
+  if (actual !== expected) {
+    throw new Error(`Style not applied. Expected: ${expected}, Got: ${actual}`);
+  }
+}
+```
+</CodeGroup>
+
+## Clearing All Styles
+
+Passing `null` for all three fields removes any active Display Name Style from your bot in the specified guild.
+
+<CodeGroup>
+```js clearStyle.js
+async function clearStyle(client, guildId) {
+  await client.rest.patch(
+    Routes.guildMember(guildId),
+    {
+      body: {
+        display_name_font_id: null,
+        display_name_effect_id: null,
+        display_name_colors: null,
+      },
+    }
+  );
+}
+```
+</CodeGroup>
+
+## Applying Styles Across Multiple Guilds
+
+When rolling out a style change across every guild your bot belongs to, rate limiting is your primary concern. The safe pattern is to process guilds sequentially with a generous delay between each request rather than firing them in parallel.
+
+<Warning>
+  Apply at a maximum rate of **one guild per 10 minutes**. Sending requests faster has been observed to trigger silent failures.
+</Warning>
+
+<CodeGroup>
+```js applyToAllGuilds.js
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function applyToAllGuilds(client) {
+  const guilds = await client.guilds.fetch();
+
+  for (const [guildId] of guilds) {
+    try {
+      await setStyle(client, guildId);
+      console.log(`Applied style to guild ${guildId}`);
+    } catch (err) {
+      console.warn(`Skipped guild ${guildId}: ${err.message}`);
+    }
+
+    // Pace at one guild per 10 minutes to avoid rate limits
+    await sleep(10 * 60 * 1000);
+  }
+}
+```
+</CodeGroup>
+
+<Note>
+  See [Gotchas](/gotchas) for a full list of non-obvious behaviors including caching strategy, retry timing, and how to handle guild overrides.
+</Note>

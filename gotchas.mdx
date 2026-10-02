@@ -1,0 +1,35 @@
+---
+title: "Non-Obvious Behaviors and Gotchas"
+sidebarTitle: "Gotchas"
+description: "Known non-obvious behaviors with Discord bot Display Name Styles: HTTP 200 is not confirmation, aggressive rate limits, per-guild scoping, and more."
+---
+
+Several behaviors of the Display Name Styles API are non-obvious or counter-intuitive. Read this page before deploying — ignoring these can result in silent failures, rate limit bans, or styles that appear to apply but are immediately discarded.
+
+<Warning>
+  An HTTP 200 response does **not** mean the style was successfully applied. Discord may silently accept the request but ignore the style fields. **Always read `display_name_styles` from the response and compare it against what you sent.**
+</Warning>
+
+## Known Gotchas
+
+<AccordionGroup>
+  <Accordion title="Per-guild, not global">
+    Display Name Styles are scoped per guild. The endpoint is `/guilds/{guild_id}/members/@me` — you must make a separate PATCH request for each guild where you want to apply a style. There is no global style setting.
+  </Accordion>
+
+  <Accordion title="Aggressive rate limits">
+    This endpoint is subject to aggressive undocumented rate limits when used to set display name styles. A known-working implementation paces requests at **one guild per 10 minutes**. Do not attempt to apply styles to many guilds rapidly.
+  </Accordion>
+
+  <Accordion title="Respect server overrides">
+    If a guild has set a nickname, avatar, or banner override for your bot, skip or clear the display name style for that guild. Applying a style when overrides are present may conflict with or override guild-applied customizations.
+  </Accordion>
+
+  <Accordion title="Cache per guild by join time">
+    To avoid redundant requests, cache the current style signature per guild keyed by the bot's `joinedTimestamp` in that guild. If the join timestamp changes (e.g. the bot was kicked and re-invited), invalidate the cache and re-apply.
+  </Accordion>
+
+  <Accordion title="Retry after ~24 hours">
+    If a style silently fails to apply (i.e. the response `display_name_styles` does not match what you sent), do **not** retry immediately. Wait approximately 24 hours before trying again. Rapid retries will not help and may trigger stricter rate limiting.
+  </Accordion>
+</AccordionGroup>

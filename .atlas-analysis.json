@@ -1,0 +1,41 @@
+{
+  "projectType": "api-service",
+  "projectName": "Display Name Styles (Unofficial)",
+  "projectDescription": "Community-reverse-engineered documentation for Discord's undocumented bot Display Name Styles API, covering fonts, effects, and colors per guild.",
+  "theme": "luma",
+  "primaryColor": "#5865F2",
+  "lightColor": "#7983F5",
+  "darkColor": "#4752C4",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Overview",
+        "pages": ["introduction", "gotchas"]
+      },
+      {
+        "group": "API Reference",
+        "pages": ["endpoint", "fonts", "effects", "colors"]
+      },
+      {
+        "group": "Examples",
+        "pages": ["examples"]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Set per-guild bot display name font via display_name_font_id",
+    "Set per-guild bot display name effect via display_name_effect_id",
+    "Set per-guild bot display name colors (decimal RGB) via display_name_colors",
+    "Clear all display name styles by patching null values",
+    "12 confirmed font IDs (gg sans through Journal)",
+    "6–7 effect IDs (Solid through Gummy/Prism)",
+    "Gradient support with up to 5 color stops"
+  ],
+  "publicApiSurface": [
+    "PATCH /guilds/{guild_id}/members/@me",
+    "display_name_font_id (request field)",
+    "display_name_effect_id (request field)",
+    "display_name_colors (request field)",
+    "display_name_styles (response field)"
+  ]
+}

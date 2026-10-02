@@ -1,0 +1,25 @@
+---
+title: "Display Name Effect IDs for Discord Bots"
+sidebarTitle: "Effects"
+description: "Effect IDs for display_name_effect_id: Solid (1) through Glow (6), plus an unconfirmed ID 7 that may be Gummy or Prism."
+---
+
+The `display_name_effect_id` field accepts an integer that controls how Discord renders the color applied to your bot's display name. Effects range from a flat Solid fill to animated styles like Neon and Glow.
+
+| ID | Effect Name  | Notes                         |
+|----|-------------|-------------------------------|
+| 1  | Solid        | Flat fill, single color       |
+| 2  | Gradient     | Smooth blend between colors   |
+| 3  | Neon         | Glowing neon edge             |
+| 4  | Toon         | Bold cartoon-style outline    |
+| 5  | Pop          | High-contrast pop art style   |
+| 6  | Glow         | Soft ambient glow             |
+| 7  | Gummy/Prism  | Unconfirmed — name uncertain  |
+
+<Warning>
+  Effect ID 7 has been observed but its exact name — "Gummy" or "Prism" — is unconfirmed. Treat it as experimental.
+</Warning>
+
+<Note>
+  When using effect ID 2 (Gradient) or effect ID 7, pass multiple color stops in `display_name_colors`. See the [Colors reference](/colors) for gradient examples.
+</Note>

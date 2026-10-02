@@ -1,0 +1,50 @@
+---
+title: "Apply Discord Bot Display Name Styles Per Guild"
+sidebarTitle: "Introduction"
+description: "Display Name Styles let your Discord bot show a custom font, visual effect, and color scheme on its name — configured separately for each guild."
+---
+
+<Warning>
+  Unofficial and undocumented. This API was discovered through community reverse-engineering. Discord may change or remove it at any time.
+</Warning>
+
+Display Name Styles allow a Discord bot to present a styled display name — combining a **font** (e.g. Medieval, 8Bit, Vampyre), a visual **effect** (e.g. Neon, Toon, Glow), and one or more **colors** — applied independently on a per-guild basis. Styles are set via an undocumented field on the standard guild member PATCH endpoint.
+
+## How It Works
+
+Three fields are patched onto the guild member object to control the style:
+
+- **`display_name_font_id`** _(integer)_ — selects the typeface rendered for the bot's display name.
+- **`display_name_effect_id`** _(integer)_ — selects the visual effect applied on top of the font.
+- **`display_name_colors`** _(array of decimal RGB integers)_ — one or more colors used by the effect or font renderer.
+
+```json
+{
+  "display_name_font_id": 6,
+  "display_name_effect_id": 4,
+  "display_name_colors": [15777856]
+}
+```
+
+In the example above, `display_name_font_id: 6` corresponds to the **Medieval** font, `display_name_effect_id: 4` corresponds to the **Toon** effect, and `display_name_colors: [15777856]` is the decimal representation of `#F10000`.
+
+<Note>
+  Colors are passed as plain decimal integers, not hex strings. Convert your hex color to a base-10 integer before sending the request.
+</Note>
+
+## Explore the Reference
+
+<CardGroup cols={2}>
+  <Card title="Endpoint" icon="code" href="/endpoint">
+    PATCH request fields, response shape, and how to clear styles.
+  </Card>
+  <Card title="Fonts" icon="font" href="/fonts">
+    All 12 confirmed font IDs from gg sans to Journal.
+  </Card>
+  <Card title="Effects" icon="sparkles" href="/effects">
+    Effect IDs 1–7 including Solid, Neon, Glow, and more.
+  </Card>
+  <Card title="Gotchas" icon="triangle-exclamation" href="/gotchas">
+    Rate limits, per-guild scoping, and verification steps.
+  </Card>
+</CardGroup>
