@@ -43,6 +43,12 @@ export const RequestMaker = () => {
     link.href =
       "https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Chicle&family=MuseoModerno:wght@600&family=MedievalSharp&family=Pixelify+Sans:wght@600&family=Grenze+Gotisch:wght@600&family=Zilla+Slab:wght@600&family=Noto+Sans:wght@600&display=swap";
     document.head.appendChild(link);
+    const face = document.createElement("style");
+    face.id = "dns-preview-sinistre";
+    face.textContent =
+      "@font-face{font-family:'Sinistre';font-weight:400 900;font-display:swap;" +
+      "src:url('https://cdn.jsdelivr.net/gh/collletttivo/sinistre@main/fonts/SinistreVF.woff2') format('woff2');}";
+    document.head.appendChild(face);
   }, []);
 
   const [name, setName] = useState("MyBot");
@@ -344,7 +350,7 @@ The Request Maker builds a Display Name Styles request for you and shows a live 
 <RequestMaker />
 
 <Note>
-  The preview is an approximation, not Discord's exact rendering. Fonts use the same typefaces Discord uses where they are publicly available. Medieval and Vampyre use look-alike fonts, and unnamed fonts (1, 2, 5, 9) show in the default font.
+  The preview is an approximation, not Discord's exact rendering. Fonts use the same typefaces Discord uses where they are publicly available. Vampyre uses Sinistre, the same typeface Discord uses. Medieval uses a look-alike font, and unnamed fonts (1, 2, 5, 9) show in the default font.
 </Note>
 
 ---

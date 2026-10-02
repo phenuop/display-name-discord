@@ -1,4 +1,7 @@
 (function () {
+  if (window.__dnsFeedbackLoaded) return;
+  window.__dnsFeedbackLoaded = true;
+
   var ID = "dns-feedback";
   var KEY = "dns-feedback:";
 
@@ -33,7 +36,7 @@
     svg.setAttribute("stroke-width", "2");
     svg.setAttribute("stroke-linecap", "round");
     svg.setAttribute("stroke-linejoin", "round");
-    ICONS[name].forEach(function (d) {
+    (ICONS[name] || []).forEach(function (d) {
       var p = document.createElementNS(NS, "path");
       p.setAttribute("d", d);
       svg.appendChild(p);
@@ -81,83 +84,6 @@
     }
 
     text.textContent = "Was this page helpful?";
-    var yes = button("Yes", "\uD83D\uDC4D");
-    var no = button("No", "\uD83D\uDC4E");
-    yes.onclick = function () { setVote(path, "yes"); render(box, path); };
-    no.onclick = function () { setVote(path, "no"); render(box, path); };
-
-    box.appendChild(text);
-    box.appendChild(yes);
-    box.appendChild(no);
-  }
-
-  function mount() {
-    var host =
-      document.querySelector("#content") ||
-      document.querySelector("mdx-content") ||
-      document.querySelector("#content-area");
-    if (!host) return;
-
-    var path = window.location.pathname;
-    var box = document.getElementById(ID);
-
-    if (box && box.parentNode === host && box.getAttribute("data-path") === path) return;
-    if (box) box.parentNode.removeChild(box);
-
-    box = document.createElement("div");
-    box.id = ID;
-    box.setAttribute("data-path", path);
-    box.style.cssText =
-      "display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:48px;" +
-      "padding-top:16px;border-top:1px solid #3F4147;";
-    host.appendChild(box);
-    render(box, path);
-  }
-
-  mount();
-  new MutationObserver(function () { mount(); })
-    .observe(document.body, { childList: true, subtree: true });
-})();
-(function () {
-  var ID = "dns-feedback";
-  var KEY = "dns-feedback:";
-
-  function getVote(path) {
-    try { return localStorage.getItem(KEY + path); } catch (e) { return null; }
-  }
-
-  function setVote(path, vote) {
-    try { localStorage.setItem(KEY + path, vote); } catch (e) {}
-  }
-
-  function button(label, icon) {
-    var b = document.createElement("button");
-    b.type = "button";
-    b.textContent = icon + " " + label;
-    b.style.cssText =
-      "background:#2B2D31;color:#DBDEE1;border:1px solid #3F4147;border-radius:6px;" +
-      "padding:6px 14px;font-size:14px;cursor:pointer;font-family:inherit;";
-    b.onmouseenter = function () { b.style.background = "#35373C"; };
-    b.onmouseleave = function () { b.style.background = "#2B2D31"; };
-    return b;
-  }
-
-  function render(box, path) {
-    while (box.firstChild) box.removeChild(box.firstChild);
-
-    var vote = getVote(path);
-    var text = document.createElement("span");
-    text.style.cssText = "font-size:14px;color:#B5BAC1;margin-right:8px;";
-
-    if (vote) {
-      text.textContent = vote === "yes"
-        ? "Thanks! Glad this page helped."
-        : "Thanks for letting us know.";
-      box.appendChild(text);
-      return;
-    }
-
-    text.textContent = "Was this page helpful?";
     var yes = button("Yes", "up", "#23A55A");
     var no = button("No", "down", "#F23F43");
     yes.onclick = function () { setVote(path, "yes"); render(box, path); };
@@ -169,29 +95,44 @@
   }
 
   function mount() {
-    var host =
-      document.querySelector("#content") ||
-      document.querySelector("mdx-content") ||
-      document.querySelector("#content-area");
+    var pagination = document.getElementById("pagination");
+    var host = pagination ? pagination.parentNode : null;
+    var selectors = ["#content-area", "#content", ".mdx-content", "mdx-content", "article", "main"];
+    for (var i = 0; !host && i < selectors.length; i++) {
+      host = document.querySelector(selectors[i]);
+    }
     if (!host) return;
 
     var path = window.location.pathname;
     var box = document.getElementById(ID);
 
-    if (box && box.parentNode === host && box.getAttribute("data-path") === path) return;
-    if (box) box.parentNode.removeChild(box);
+    if (box && document.body.contains(box) && box.getAttribute("data-path") === path) return;
+    if (box && box.parentNode) box.parentNode.removeChild(box);
 
     box = document.createElement("div");
     box.id = ID;
     box.setAttribute("data-path", path);
     box.style.cssText =
       "display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:48px;" +
-      "padding-top:16px;border-top:1px solid #3F4147;";
-    host.appendChild(box);
+      "margin-bottom:24px;padding-top:16px;border-top:1px solid #3F4147;";
+    if (pagination) host.insertBefore(box, pagination);
+    else host.appendChild(box);
     render(box, path);
   }
 
-  mount();
-  new MutationObserver(function () { mount(); })
-    .observe(document.body, { childList: true, subtree: true });
+  var timer = null;
+  function schedule() {
+    if (timer) return;
+    timer = setTimeout(function () { timer = null; mount(); }, 200);
+  }
+
+  function start() {
+    mount();
+    new MutationObserver(schedule)
+      .observe(document.body, { childList: true, subtree: true });
+    setInterval(mount, 1500);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();
