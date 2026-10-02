@@ -12,13 +12,26 @@ The `display_name_colors` field takes an array of whole-number RGB values, where
 
 Parse the hex color as a 24-bit integer. Hex strings are rejected, so always convert first.
 
-```js hex-to-decimal.js
-const hexToDecimal = (hex) => parseInt(hex.replace('#', ''), 16);
+<CodeGroup>
+
+```ts hex-to-decimal.ts
+const hexToDecimal = (hex: string): number => parseInt(hex.replace('#', ''), 16);
 
 hexToDecimal('#F10000'); // 15794176
 hexToDecimal('#D4A017'); // 13934615
 hexToDecimal('#000000'); // 0
 ```
+
+```python hex_to_decimal.py
+def hex_to_decimal(hex_color: str) -> int:
+    return int(hex_color.lstrip("#"), 16)
+
+hex_to_decimal("#F10000")  # 15794176
+hex_to_decimal("#D4A017")  # 13934615
+hex_to_decimal("#000000")  # 0
+```
+
+</CodeGroup>
 
 ---
 

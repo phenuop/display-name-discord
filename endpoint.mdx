@@ -12,6 +12,30 @@ Authorization: Bot <token>
 Content-Type: application/json
 ```
 
+<CodeGroup>
+
+```js request.js
+await client.rest.patch(Routes.guildMember(guildId), {
+  body: { display_name_font_id: 6, display_name_effect_id: 4, display_name_colors: [15777856] },
+});
+```
+
+```ts request.ts
+await client.rest.patch(Routes.guildMember(guildId), {
+  body: { display_name_font_id: 6, display_name_effect_id: 4, display_name_colors: [15777856] },
+});
+```
+
+```python request.py
+requests.patch(
+    f"https://discord.com/api/v10/guilds/{guild_id}/members/@me",
+    headers={"Authorization": f"Bot {token}"},
+    json={"display_name_font_id": 6, "display_name_effect_id": 4, "display_name_colors": [15777856]},
+)
+```
+
+</CodeGroup>
+
 ---
 
 ## Request Fields

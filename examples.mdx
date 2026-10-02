@@ -1,16 +1,18 @@
 ---
 title: "Code Examples: Setting and Clearing Display Name Styles"
 sidebarTitle: "Examples"
-description: "JavaScript code examples using discord.js REST client to set and clear bot Display Name Styles per guild, including response verification."
+description: "JavaScript, TypeScript, and Python examples to set and clear bot Display Name Styles per guild, verify the response, and apply styles across guilds."
 ---
 
-The examples below use the discord.js REST client (`client.rest`) and `Routes.guildMember` to set and clear Display Name Styles. Replace the font, effect, and color values with IDs from the [Fonts](/fonts), [Effects](/effects), and [Colors](/colors) references.
+The examples below set and clear Display Name Styles in JavaScript and TypeScript (discord.js REST client with `Routes.guildMember`) and Python (`requests`). Replace the font, effect, and color values with IDs from the [Fonts](/fonts), [Effects](/effects), and [Colors](/colors) references, or build them with the [Request Maker](/request-maker).
 
 ---
 
 ## Setting a Style
 
 After patching, verify that the response `display_name_styles` matches what you sent. HTTP 200 alone does not guarantee the style was applied.
+
+<CodeGroup>
 
 ```js setStyle.js
 const sig = (s) => s ? `${s.font_id}:${s.effect_id}:${(s.colors||[]).join(",")}` : "";
@@ -22,22 +24,85 @@ async function setStyle(client, guildId) {
 }
 ```
 
+```ts setStyle.ts
+import { Client, Routes } from "discord.js";
+
+interface DisplayNameStyles {
+  font_id: number;
+  effect_id: number;
+  colors: number[];
+}
+
+const sig = (s?: DisplayNameStyles | null): string =>
+  s ? `${s.font_id}:${s.effect_id}:${(s.colors || []).join(",")}` : "";
+
+async function setStyle(client: Client, guildId: string): Promise<void> {
+  const body = { display_name_font_id: 6, display_name_effect_id: 4, display_name_colors: [15777856] };
+  const m = (await client.rest.patch(Routes.guildMember(guildId), { body })) as {
+    display_name_styles: DisplayNameStyles | null;
+  };
+  if (sig(m.display_name_styles) !== sig({ font_id: 6, effect_id: 4, colors: [15777856] })) {
+    throw new Error("not kept");
+  }
+}
+```
+
+```python set_style.py
+import requests
+
+TOKEN = "your-bot-token"
+API = "https://discord.com/api/v10"
+HEADERS = {"Authorization": f"Bot {TOKEN}"}
+
+def sig(s):
+    return f"{s['font_id']}:{s['effect_id']}:{','.join(map(str, s.get('colors') or []))}" if s else ""
+
+def set_style(guild_id):
+    body = {"display_name_font_id": 6, "display_name_effect_id": 4, "display_name_colors": [15777856]}
+    r = requests.patch(f"{API}/guilds/{guild_id}/members/@me", headers=HEADERS, json=body)
+    r.raise_for_status()
+    if sig(r.json().get("display_name_styles")) != sig({"font_id": 6, "effect_id": 4, "colors": [15777856]}):
+        raise RuntimeError("not kept")
+```
+
+</CodeGroup>
+
 ---
 
 ## Clearing a Style
 
 Pass `null` for all three fields.
 
+<CodeGroup>
+
 ```js clearStyle.js
 await client.rest.patch(Routes.guildMember(guildId), { body: {
   display_name_font_id:null, display_name_effect_id:null, display_name_colors:null }});
 ```
 
+```ts clearStyle.ts
+await client.rest.patch(Routes.guildMember(guildId), {
+  body: { display_name_font_id: null, display_name_effect_id: null, display_name_colors: null },
+});
+```
+
+```python clear_style.py
+requests.patch(
+    f"{API}/guilds/{guild_id}/members/@me",
+    headers=HEADERS,
+    json={"display_name_font_id": None, "display_name_effect_id": None, "display_name_colors": None},
+).raise_for_status()
+```
+
+</CodeGroup>
+
 ---
 
 ## Applying Styles Across Multiple Guilds
 
-Process guilds one at a time with a short delay between requests rather than sending them in parallel. The discord.js REST client also handles `429` rate limit responses for you.
+Process guilds one at a time with a short delay between requests rather than sending them in parallel. The discord.js REST client handles `429` rate limit responses for you. In Python, wait for `retry_after` yourself.
+
+<CodeGroup>
 
 ```js applyToAllGuilds.js
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -58,5 +123,51 @@ async function applyToAllGuilds(client) {
   }
 }
 ```
+
+```ts applyToAllGuilds.ts
+import { Client } from "discord.js";
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+async function applyToAllGuilds(client: Client): Promise<void> {
+  const guilds = await client.guilds.fetch();
+
+  for (const [guildId] of guilds) {
+    try {
+      await setStyle(client, guildId);
+      console.log(`Applied style to guild ${guildId}`);
+    } catch (err) {
+      console.warn(`Skipped guild ${guildId}: ${(err as Error).message}`);
+    }
+
+    // Small delay between guilds to avoid request bursts
+    await sleep(2000);
+  }
+}
+```
+
+```python apply_to_all_guilds.py
+import time
+
+def apply_to_all_guilds():
+    guilds = requests.get(f"{API}/users/@me/guilds", headers=HEADERS).json()
+
+    for guild in guilds:
+        guild_id = guild["id"]
+        try:
+            set_style(guild_id)
+            print(f"Applied style to guild {guild_id}")
+        except requests.HTTPError as err:
+            if err.response.status_code == 429:
+                time.sleep(err.response.json().get("retry_after", 5))
+            print(f"Skipped guild {guild_id}: {err}")
+        except RuntimeError as err:
+            print(f"Skipped guild {guild_id}: {err}")
+
+        # Small delay between guilds to avoid request bursts
+        time.sleep(2)
+```
+
+</CodeGroup>
 
 See [Gotchas](/gotchas) for other non-obvious behaviors.

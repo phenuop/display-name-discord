@@ -1,0 +1,202 @@
+---
+title: "Request Maker: Build a Display Name Style Request Visually"
+sidebarTitle: "Request Maker"
+description: "Pick a font, effect, and colors for your Discord bot's display name and get a ready-to-send JSON body plus JavaScript, TypeScript, Python, and cURL code."
+---
+
+export const RequestMaker = () => {
+  const FONTS = [
+    [1, "Font 1 (no name)"],
+    [2, "Font 2 (no name)"],
+    [3, "Sakura"],
+    [4, "Jellybean"],
+    [5, "Font 5 (no name)"],
+    [6, "Modern"],
+    [7, "Medieval"],
+    [8, "8Bit"],
+    [9, "Font 9 (no name)"],
+    [10, "Vampyre"],
+    [11, "gg sans"],
+    [12, "Tempo"]
+  ];
+  const EFFECTS = [
+    [1, "Solid", 1],
+    [2, "Gradient", 5],
+    [3, "Neon", 1],
+    [4, "Toon", 1],
+    [5, "Pop", 1],
+    [6, "Glow", 5]
+  ];
+  const LANGS = [
+    ["json", "JSON"],
+    ["js", "JavaScript"],
+    ["ts", "TypeScript"],
+    ["py", "Python"],
+    ["curl", "cURL"]
+  ];
+
+  const [font, setFont] = useState(6);
+  const [effect, setEffect] = useState(4);
+  const [colors, setColors] = useState(["#F0C040", "#5865F2", "#F0C040", "#5865F2", "#F0C040"]);
+  const [count, setCount] = useState(1);
+  const [clear, setClear] = useState(false);
+  const [lang, setLang] = useState("json");
+  const [copied, setCopied] = useState(false);
+
+  const maxColors = EFFECTS.find((e) => e[0] === effect)[2];
+  const used = Math.min(count, maxColors);
+  const shown = colors.slice(0, used);
+  const toDec = (hex) => parseInt(hex.replace("#", ""), 16);
+
+  const body = clear
+    ? { display_name_font_id: null, display_name_effect_id: null, display_name_colors: null }
+    : {
+        display_name_font_id: font,
+        display_name_effect_id: effect,
+        display_name_colors: shown.map(toDec)
+      };
+
+  const json = JSON.stringify(body, null, 2);
+  const inline = JSON.stringify(body);
+  const pyBody = json.replace(/null/g, "None").replace(/\n/g, "\n    ");
+  const jsBody = json.replace(/\n/g, "\n  ");
+
+  const code = {
+    json: json,
+    js:
+      'const { Routes } = require("discord.js");\n\n' +
+      "async function applyStyle(client, guildId) {\n" +
+      "  const body = " + jsBody + ";\n" +
+      "  const member = await client.rest.patch(Routes.guildMember(guildId), { body });\n" +
+      "  console.log(member.display_name_styles);\n" +
+      "}",
+    ts:
+      'import { Client, Routes } from "discord.js";\n\n' +
+      "interface DisplayNameStyles {\n  font_id: number;\n  effect_id: number;\n  colors: number[];\n}\n\n" +
+      "async function applyStyle(client: Client, guildId: string): Promise<DisplayNameStyles | null> {\n" +
+      "  const body = " + jsBody + ";\n" +
+      "  const member = (await client.rest.patch(Routes.guildMember(guildId), { body })) as {\n" +
+      "    display_name_styles: DisplayNameStyles | null;\n  };\n" +
+      "  return member.display_name_styles;\n" +
+      "}",
+    py:
+      "import requests\n\n" +
+      'TOKEN = "your-bot-token"\n' +
+      'GUILD_ID = "your-guild-id"\n\n' +
+      "def apply_style():\n" +
+      "    body = " + pyBody + "\n" +
+      "    r = requests.patch(\n" +
+      '        f"https://discord.com/api/v10/guilds/{GUILD_ID}/members/@me",\n' +
+      '        headers={"Authorization": f"Bot {TOKEN}"},\n' +
+      "        json=body,\n    )\n" +
+      "    r.raise_for_status()\n" +
+      '    print(r.json().get("display_name_styles"))\n\n' +
+      "apply_style()",
+    curl:
+      'curl -X PATCH "https://discord.com/api/v10/guilds/GUILD_ID/members/@me" \\\n' +
+      '  -H "Authorization: Bot YOUR_TOKEN" \\\n' +
+      '  -H "Content-Type: application/json" \\\n' +
+      "  -d '" + inline + "'"
+  }[lang];
+
+  const copy = () => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
+  const setColorAt = (i, value) => {
+    const next = colors.slice();
+    next[i] = value;
+    setColors(next);
+  };
+
+  const box = "border border-zinc-950/20 dark:border-white/20 p-3 mb-3";
+  const label = "block text-sm font-bold mb-1 text-zinc-950 dark:text-white";
+  const input = "w-full border border-zinc-950/30 dark:border-white/30 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white p-1 text-sm";
+  const btn = "border border-zinc-950/30 dark:border-white/30 px-2 py-1 text-sm text-zinc-950 dark:text-white bg-zinc-100 dark:bg-zinc-800";
+
+  const preview = shown.length > 1
+    ? "linear-gradient(90deg, " + shown.join(", ") + ")"
+    : shown[0];
+
+  return (
+    <div className="not-prose">
+      <div className={box}>
+        <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-white">
+          <input type="checkbox" checked={clear} onChange={(e) => setClear(e.target.checked)} />
+          Clear the style instead (send all three fields as null)
+        </label>
+      </div>
+
+      {!clear && (
+        <div>
+          <div className={box}>
+            <label className={label}>Font</label>
+            <select className={input} value={font} onChange={(e) => setFont(Number(e.target.value))}>
+              {FONTS.map((f) => (
+                <option key={f[0]} value={f[0]}>{f[0]}: {f[1]}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className={box}>
+            <label className={label}>Effect</label>
+            <select className={input} value={effect} onChange={(e) => setEffect(Number(e.target.value))}>
+              {EFFECTS.map((f) => (
+                <option key={f[0]} value={f[0]}>{f[0]}: {f[1]} ({f[2] === 1 ? "1 color" : "1 to 5 colors"})</option>
+              ))}
+            </select>
+          </div>
+
+          <div className={box}>
+            <label className={label}>Colors ({used} of {maxColors})</label>
+            <div className="flex flex-wrap gap-3 items-center">
+              {shown.map((c, i) => (
+                <div key={i} className="flex items-center gap-1">
+                  <input type="color" value={c} onChange={(e) => setColorAt(i, e.target.value.toUpperCase())} />
+                  <span className="text-xs font-mono text-zinc-950 dark:text-white">{c} = {toDec(c)}</span>
+                </div>
+              ))}
+            </div>
+            {maxColors > 1 && (
+              <div className="flex gap-2 mt-2">
+                <button className={btn} disabled={used >= 5} onClick={() => setCount(Math.min(5, used + 1))}>+ Add color</button>
+                <button className={btn} disabled={used <= 1} onClick={() => setCount(Math.max(1, used - 1))}>- Remove color</button>
+              </div>
+            )}
+            <div className="mt-3 h-6 border border-zinc-950/20 dark:border-white/20" style={{ background: preview }} />
+          </div>
+        </div>
+      )}
+
+      <div className={box}>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {LANGS.map((l) => (
+            <button
+              key={l[0]}
+              className={btn}
+              style={lang === l[0] ? { fontWeight: "bold", textDecoration: "underline" } : {}}
+              onClick={() => setLang(l[0])}
+            >
+              {l[1]}
+            </button>
+          ))}
+          <button className={btn} onClick={copy}>{copied ? "Copied!" : "Copy"}</button>
+        </div>
+        <pre className="text-xs font-mono p-3 overflow-x-auto bg-zinc-100 dark:bg-zinc-900 text-zinc-950 dark:text-white whitespace-pre">{code}</pre>
+      </div>
+    </div>
+  );
+};
+
+The Request Maker builds a Display Name Styles request for you. Pick a font, an effect, and colors below, then copy the JSON body or the ready-made code in JavaScript, TypeScript, Python, or cURL. Only fonts and effects that save for bots are listed (see [Fonts](/fonts) and [Effects](/effects)).
+
+<RequestMaker />
+
+---
+
+## Sending the Request
+
+Send the body with `PATCH /guilds/{guild_id}/members/@me` using your bot token. Check `display_name_styles` in the response, because HTTP 200 alone does not confirm the style was saved. See [Endpoint](/endpoint) for the full reference and [Gotchas](/gotchas) for rate limits.
