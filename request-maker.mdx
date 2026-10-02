@@ -15,7 +15,7 @@ export const RequestMaker = () => {
     [7, "Medieval", "'MedievalSharp', serif"],
     [8, "8Bit", "'Pixelify Sans', monospace"],
     [9, "Font 9 (no name)", "inherit"],
-    [10, "Vampyre", "'Grenze Gotisch', serif"],
+    [10, "Vampyre", "'DNS Sinistre', 'Grenze Gotisch', serif"],
     [11, "gg sans", "'Noto Sans', sans-serif"],
     [12, "Tempo", "'Zilla Slab', serif"]
   ];
@@ -43,12 +43,6 @@ export const RequestMaker = () => {
     link.href =
       "https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Chicle&family=MuseoModerno:wght@600&family=MedievalSharp&family=Pixelify+Sans:wght@600&family=Grenze+Gotisch:wght@600&family=Zilla+Slab:wght@600&family=Noto+Sans:wght@600&display=swap";
     document.head.appendChild(link);
-    const face = document.createElement("style");
-    face.id = "dns-preview-sinistre";
-    face.textContent =
-      "@font-face{font-family:'Sinistre';font-weight:400 900;font-display:swap;" +
-      "src:url('https://cdn.jsdelivr.net/gh/collletttivo/sinistre@main/fonts/SinistreVF.woff2') format('woff2');}";
-    document.head.appendChild(face);
   }, []);
 
   const [name, setName] = useState("MyBot");

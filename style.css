@@ -1,3 +1,18 @@
+/* Sinistre (Vampyre font 10), SIL Open Font License, by Collletttivo */
+@font-face {
+  font-family: "DNS Sinistre";
+  font-weight: 100 500;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/collletttivo/sinistre@main/fonts/Sinistre-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DNS Sinistre";
+  font-weight: 501 1000;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/collletttivo/sinistre@main/fonts/Sinistre-Bold.woff2") format("woff2");
+}
+
 /* Hide the site footer */
 footer,
 #footer {
