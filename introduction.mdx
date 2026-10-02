@@ -34,6 +34,39 @@ Always send all three fields together. A style shows on the bot's profile popout
 
 ---
 
+## Example Profile
+
+A bot profile with a Display Name Style applied.
+
+<Frame caption="A bot profile using Medieval font, Gradient effect, and five colors">
+  ![A Discord bot profile with a Medieval Gradient display name style](https://omnicord.neocities.org/zhz51q5.webp)
+</Frame>
+
+| Field | ID | Name |
+| --- | --- | --- |
+| Font | 7 | Medieval |
+| Effect | 2 | Gradient |
+
+###### Colors, in Order
+
+| # | Decimal (as stored) | Hex |
+| --- | --- | --- |
+| 1 | 15777856 | `0xF0C040` (light gold) |
+| 2 | 5812456 | `0x58B0E8` (blue) |
+| 3 | 13934615 | `0xD4A017` (darker gold) |
+| 4 | 5812456 | `0x58B0E8` |
+| 5 | 13934615 | `0xD4A017` |
+
+```json
+{
+  "display_name_font_id": 7,
+  "display_name_effect_id": 2,
+  "display_name_colors": [15777856, 5812456, 13934615, 5812456, 13934615]
+}
+```
+
+---
+
 ## Next Steps
 
 Read [Gotchas](/gotchas) before deploying, then see the [Endpoint](/endpoint) reference for the full request and response shape.
