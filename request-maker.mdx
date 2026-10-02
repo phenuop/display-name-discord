@@ -72,14 +72,15 @@ export const RequestMaker = () => {
     backgroundClip: "text",
     color: "transparent"
   };
-  const effectStyle = {
+  const styleFor = (id) => ({
     1: { color: c0 },
     2: clipText,
     3: { color: "#FFFFFF", textShadow: "0 0 3px " + c0 + ", 0 0 8px " + c0 + ", 0 0 16px " + c0 },
     4: { color: c0, WebkitTextStroke: "1px #000000", textShadow: "2px 2px 0 #000000" },
     5: { color: c0, textShadow: "0 3px 0 " + shade(c0, 0.55) },
     6: Object.assign({}, clipText, { filter: "drop-shadow(0 0 6px " + c0 + ")" })
-  }[effect];
+  }[id]);
+  const effectStyle = styleFor(effect);
 
   const fontRow = FONTS.find((f) => f[0] === font);
   const nameStyle = clear
@@ -158,8 +159,20 @@ export const RequestMaker = () => {
     btnPrimary: { background: "#5865F2", color: "#FFFFFF", border: "none", borderRadius: 4, padding: "6px 12px", fontSize: 13, fontWeight: 500, cursor: "pointer" },
     swatch: { display: "flex", alignItems: "center", gap: 10, background: "#1E1F22", borderRadius: 6, padding: "6px 10px 6px 6px" },
     colorInput: { width: 36, height: 36, border: "none", borderRadius: 4, padding: 0, background: "transparent", cursor: "pointer" },
-    mono: { fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 12 }
+    mono: { fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 12 },
+    grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 8 },
+    tileName: { fontSize: 12, fontWeight: 600, color: "#DBDEE1", marginTop: 6 },
+    tileId: { fontSize: 10, color: "#949BA4", marginTop: 2 }
   };
+  const tile = (active) => ({
+    background: active ? "#3C3F72" : "#1E1F22",
+    border: active ? "2px solid #5865F2" : "2px solid #1E1F22",
+    borderRadius: 8,
+    padding: "12px 6px 10px",
+    textAlign: "center",
+    cursor: "pointer",
+    overflow: "hidden"
+  });
 
   return (
     <div className="not-prose">
@@ -189,22 +202,29 @@ export const RequestMaker = () => {
 
       {!clear && (
         <div>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <div style={Object.assign({}, S.panel, { flex: "1 1 200px" })}>
-              <label style={S.label}>Font</label>
-              <select style={S.input} value={font} onChange={(e) => setFont(Number(e.target.value))}>
-                {FONTS.map((f) => (
-                  <option key={f[0]} value={f[0]}>{f[0]}: {f[1]}</option>
-                ))}
-              </select>
+          <div style={S.panel}>
+            <label style={S.label}>Font</label>
+            <div style={S.grid}>
+              {FONTS.map((f) => (
+                <button key={f[0]} style={tile(font === f[0])} onClick={() => setFont(f[0])} title={"Font " + f[0]}>
+                  <div style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.2, color: "#F2F3F5", fontFamily: f[2] }}>Aa</div>
+                  <div style={S.tileName}>{f[1].replace(" (no name)", "")}</div>
+                  <div style={S.tileId}>ID {f[0]}</div>
+                </button>
+              ))}
             </div>
-            <div style={Object.assign({}, S.panel, { flex: "1 1 200px" })}>
-              <label style={S.label}>Effect</label>
-              <select style={S.input} value={effect} onChange={(e) => setEffect(Number(e.target.value))}>
-                {EFFECTS.map((f) => (
-                  <option key={f[0]} value={f[0]}>{f[0]}: {f[1]} ({f[2] === 1 ? "1 color" : "1 to 5 colors"})</option>
-                ))}
-              </select>
+          </div>
+
+          <div style={S.panel}>
+            <label style={S.label}>Effect</label>
+            <div style={S.grid}>
+              {EFFECTS.map((f) => (
+                <button key={f[0]} style={tile(effect === f[0])} onClick={() => setEffect(f[0])} title={"Effect " + f[0]}>
+                  <div style={Object.assign({ fontSize: 28, fontWeight: 700, lineHeight: 1.2, display: "inline-block", padding: "0 4px", fontFamily: fontRow[2] }, styleFor(f[0]))}>Aa</div>
+                  <div style={S.tileName}>{f[1]}</div>
+                  <div style={S.tileId}>ID {f[0]} · {f[2] === 1 ? "1 color" : "1 to 5 colors"}</div>
+                </button>
+              ))}
             </div>
           </div>
 
