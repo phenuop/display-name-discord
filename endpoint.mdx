@@ -1,21 +1,54 @@
 ---
-title: "PATCH /guilds/{guild_id}/members/@me — Display Name Styles"
+title: "PATCH /guilds/{guild_id}/members/@me: Display Name Styles"
 sidebarTitle: "Endpoint"
-description: "PATCH /guilds/{guild_id}/members/@me — set or clear bot Display Name Styles. Accepts font, effect, and color fields; returns display_name_styles object."
+description: "PATCH /guilds/{guild_id}/members/@me sets or clears bot Display Name Styles. Accepts font, effect, and color fields; returns a display_name_styles object."
 ---
 
-The `PATCH /guilds/{guild_id}/members/@me` endpoint is the standard Discord guild member update endpoint. By including the three undocumented display name style fields in the request body, your bot can set or clear its styled display name for a specific guild.
+The `PATCH /guilds/{guild_id}/members/@me` endpoint is the standard Discord guild member update endpoint. Including the three undocumented display name style fields in the request body sets or clears your bot's styled display name for that guild.
 
-<Info>
-  **Method:** PATCH  
-  **URL:** `https://discord.com/api/v10/guilds/{guild_id}/members/@me`  
-  **Auth:** `Authorization: Bot <token>`  
-  **Content-Type:** `application/json`
-</Info>
+```http
+PATCH https://discord.com/api/v10/guilds/{guild_id}/members/@me
+Authorization: Bot <token>
+Content-Type: application/json
+```
+
+---
+
+## Request Fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| display_name_font_id | ?integer | Font ID to apply. See [Fonts](/fonts). `null` clears it. |
+| display_name_effect_id | ?integer | Effect ID to apply. See [Effects](/effects). `null` clears it. |
+| display_name_colors | ?array of integers | Decimal RGB colors. Pass one value for a solid color, or up to 5 stops for gradients. See [Colors](/colors). `null` clears it. |
+
+---
+
+## Response Fields
+
+The response is the guild member object, with an added `display_name_styles` field.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| display_name_styles | ?object | Present when styles are active, `null` when cleared. |
+
+###### Display Name Styles Structure
+
+| Field | Type | Description |
+| --- | --- | --- |
+| font_id | integer | The applied font ID. |
+| effect_id | integer | The applied effect ID. |
+| colors | array of integers | The applied decimal RGB colors. |
+
+<Warning>
+  Request and response field names do not match. The request uses `display_name_font_id`, `display_name_effect_id`, and `display_name_colors`. The response uses `display_name_styles.font_id`, `display_name_styles.effect_id`, and `display_name_styles.colors`.
+</Warning>
+
+---
 
 ## Set Display Name Styles
 
-```json Set styles request
+```json Request
 {
   "display_name_font_id": 6,
   "display_name_effect_id": 4,
@@ -23,7 +56,7 @@ The `PATCH /guilds/{guild_id}/members/@me` endpoint is the standard Discord guil
 }
 ```
 
-```json Set styles response
+```json Response
 {
   "user": {
     "id": "123456789012345678",
@@ -39,9 +72,13 @@ The `PATCH /guilds/{guild_id}/members/@me` endpoint is the standard Discord guil
 }
 ```
 
+---
+
 ## Clear Display Name Styles
 
-```json Clear styles request
+Pass `null` for all three fields.
+
+```json Request
 {
   "display_name_font_id": null,
   "display_name_effect_id": null,
@@ -49,45 +86,20 @@ The `PATCH /guilds/{guild_id}/members/@me` endpoint is the standard Discord guil
 }
 ```
 
-```json Clear styles response
+```json Response
 {
   "display_name_styles": null
 }
 ```
 
-<Warning>
-  **Request and response field names DO NOT match.**
-  - **Request:** `display_name_font_id`, `display_name_effect_id`, `display_name_colors`
-  - **Response:** `display_name_styles.font_id`, `display_name_styles.effect_id`, `display_name_styles.colors`
-</Warning>
+---
 
-## Request Fields
+## Open Questions
 
-<ResponseField name="display_name_font_id" type="integer | null">
-  Font ID to apply. See the [Fonts reference](/fonts) for all valid IDs. Set to `null` to clear.
-</ResponseField>
+The following behaviors are not yet confirmed by community testing:
 
-<ResponseField name="display_name_effect_id" type="integer | null">
-  Effect ID to apply. See the [Effects reference](/effects) for all valid IDs. Set to `null` to clear.
-</ResponseField>
-
-<ResponseField name="display_name_colors" type="integer[] | null">
-  Array of decimal RGB color integers. For a solid color, pass a single-element array. For gradients, pass up to 5 stops. Set to `null` to clear. See the [Colors reference](/colors) for examples.
-</ResponseField>
-
-## Response Fields
-
-<ResponseField name="display_name_styles" type="object | null">
-  Present when styles are active; `null` when cleared.
-  <Expandable title="properties">
-    <ResponseField name="font_id" type="integer">The applied font ID.</ResponseField>
-    <ResponseField name="effect_id" type="integer">The applied effect ID.</ResponseField>
-    <ResponseField name="colors" type="integer[]">Array of applied decimal RGB color integers.</ResponseField>
-  </Expandable>
-</ResponseField>
-
-<AccordionGroup>
-  <Accordion title="Open questions">
-    The following behaviors are unconfirmed by community testing: maximum number of elements in the `colors` array; whether effect ID 7 is "Gummy" or "Prism"; whether font IDs above 12 are valid; whether hex color strings are accepted in place of decimal integers; exact rate limit response headers.
-  </Accordion>
-</AccordionGroup>
+- The maximum number of elements in the `colors` array.
+- Whether effect ID 7 is "Gummy" or "Prism".
+- Whether font IDs above 12 are valid.
+- Whether hex color strings are accepted in place of decimal integers.
+- The exact rate limit response headers.

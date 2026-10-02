@@ -4,20 +4,26 @@ sidebarTitle: "Gotchas"
 description: "Known non-obvious behaviors with Discord bot Display Name Styles: HTTP 200 is not confirmation, per-guild scoping, and standard rate limits to respect."
 ---
 
-Several behaviors of the Display Name Styles API are non-obvious or counter-intuitive. This feature is **unofficial and reverse-engineered by the community** — it is not documented by Discord and may change without notice. Read this page before deploying; ignoring these gotchas can result in silent failures or styles that appear to apply but are immediately discarded.
+Several behaviors of the Display Name Styles API are non-obvious. The feature is reverse-engineered by the community and not documented by Discord, so read this page before deploying to avoid silent failures or styles that appear to apply but are discarded.
+
+---
+
+## HTTP 200 Is Not Confirmation
+
+An HTTP 200 response does not mean the style was applied. Discord may accept the request but ignore the style fields.
 
 <Warning>
-  An HTTP 200 response does **not** mean the style was successfully applied. Discord may silently accept the request but ignore the style fields. **Always read `display_name_styles` from the response and compare it against what you sent.**
+  Always read `display_name_styles` from the response and compare it against what you sent.
 </Warning>
 
-## Known Gotchas
+---
 
-<AccordionGroup>
-  <Accordion title="Per-guild, not global">
-    Display Name Styles are scoped per guild. The endpoint is `/guilds/{guild_id}/members/@me` — you must make a separate PATCH request for each guild where you want to apply a style. There is no global style setting.
-  </Accordion>
+## Per-Guild, Not Global
 
-  <Accordion title="Rate limits">
-    Like other Discord API endpoints, this endpoint is rate limited. Respect the standard rate limit headers and `429` responses, and avoid sending large bursts of requests when applying styles across many guilds.
-  </Accordion>
-</AccordionGroup>
+Display Name Styles are scoped per guild. The endpoint is `/guilds/{guild_id}/members/@me`, so you must send a separate PATCH request for each guild where you want a style. There is no global style setting.
+
+---
+
+## Rate Limits
+
+Like other Discord API endpoints, this endpoint is rate limited. Respect the standard rate limit headers and `429` responses, and avoid sending large bursts of requests when applying styles across many guilds.

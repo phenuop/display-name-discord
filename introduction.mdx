@@ -1,18 +1,22 @@
 ---
 title: "Apply Discord Bot Display Name Styles Per Guild"
 sidebarTitle: "Introduction"
-description: "Display Name Styles let your Discord bot show a custom font, visual effect, and color scheme on its name — configured separately for each guild."
+description: "Display Name Styles let your Discord bot show a custom font, visual effect, and color scheme on its name, configured separately for each guild."
 ---
 
-Display Name Styles allow a Discord bot to present a styled display name — combining a **font** (e.g. Medieval, 8Bit, Vampyre), a visual **effect** (e.g. Neon, Toon, Glow), and one or more **colors** — applied independently on a per-guild basis. Styles are set via an undocumented field on the standard guild member PATCH endpoint.
+Display Name Styles allow a Discord bot to present a styled display name that combines a font (for example Medieval, 8Bit, or Vampyre), a visual effect (for example Neon, Toon, or Glow), and one or more colors. Each style applies to a single guild. Styles are set through undocumented fields on the standard guild member PATCH endpoint.
+
+---
 
 ## How It Works
 
-Three fields are patched onto the guild member object to control the style:
+Three fields on the guild member object control the style.
 
-- **`display_name_font_id`** _(integer)_ — selects the typeface rendered for the bot's display name.
-- **`display_name_effect_id`** _(integer)_ — selects the visual effect applied on top of the font.
-- **`display_name_colors`** _(array of decimal RGB integers)_ — one or more colors used by the effect or font renderer.
+| Field | Type | Description |
+| --- | --- | --- |
+| display_name_font_id | integer | The typeface rendered for the bot's display name. See [Fonts](/fonts). |
+| display_name_effect_id | integer | The visual effect applied on top of the font. See [Effects](/effects). |
+| display_name_colors | array of integers | One or more decimal RGB colors used by the effect. See [Colors](/colors). |
 
 ```json
 {
@@ -22,28 +26,12 @@ Three fields are patched onto the guild member object to control the style:
 }
 ```
 
-In the example above, `display_name_font_id: 6` corresponds to the **Medieval** font, `display_name_effect_id: 4` corresponds to the **Toon** effect, and `display_name_colors: [15777856]` is the decimal representation of `#F10000`.
+In this example, font `6` is Medieval, effect `4` is Toon, and `15777856` is the decimal form of `#F0C040`.
 
-<Note>
-  Colors are passed as plain decimal integers, not hex strings. Convert your hex color to a base-10 integer before sending the request.
-</Note>
+Colors are plain decimal integers, not hex strings. Convert a hex color to a base-10 integer before sending the request.
 
-## Explore the Reference
+---
 
-<CardGroup cols={2}>
-  <Card title="Endpoint" icon="code" href="/endpoint">
-    PATCH request fields, response shape, and how to clear styles.
-  </Card>
-  <Card title="Fonts" icon="font" href="/fonts">
-    All 12 confirmed font IDs from gg sans to Journal.
-  </Card>
-  <Card title="Effects" icon="sparkles" href="/effects">
-    Effect IDs 1–7 including Solid, Neon, Glow, and more.
-  </Card>
-  <Card title="Colors" icon="palette" href="/colors">
-    Decimal RGB color values and how to build gradient stops.
-  </Card>
-  <Card title="Gotchas" icon="triangle-exclamation" href="/gotchas">
-    Rate limits, per-guild scoping, and verification steps.
-  </Card>
-</CardGroup>
+## Next Steps
+
+Read [Gotchas](/gotchas) before deploying, then see the [Endpoint](/endpoint) reference for the full request and response shape.

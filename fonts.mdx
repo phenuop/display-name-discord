@@ -1,26 +1,30 @@
 ---
-title: "Discord Bot Display Name Font IDs – Full Reference"
+title: "Discord Bot Display Name Font IDs: Full Reference"
 sidebarTitle: "Fonts"
 description: "All 12 confirmed font IDs for the display_name_font_id field, from gg sans (1) to Journal (12), with a note on unconfirmed higher IDs."
 ---
 
 The `display_name_font_id` field accepts an integer ID that controls which typeface Discord renders for your bot's display name in a guild. Twelve font IDs are confirmed through community testing.
 
-| ID | Font Name    |
-|----|-------------|
-| 1  | gg sans      |
-| 2  | Tempo        |
-| 3  | Sakura       |
-| 4  | Jellybean    |
-| 5  | Modern       |
-| 6  | Medieval     |
-| 7  | 8Bit         |
-| 8  | Vampyre      |
-| 9  | Monkey Bars  |
-| 10 | Mainframe    |
-| 11 | Headbang     |
-| 12 | Journal      |
+---
 
-<Note>
-  Font IDs above 12 have been observed in the wild but are unconfirmed. Using an unrecognized ID may result in the style silently not being applied — always verify by reading `display_name_styles` from the response.
-</Note>
+## Font IDs
+
+| ID | Font |
+| --- | --- |
+| 1 | gg sans |
+| 2 | Tempo |
+| 3 | Sakura |
+| 4 | Jellybean |
+| 5 | Modern |
+| 6 | Medieval |
+| 7 | 8Bit |
+| 8 | Vampyre |
+| 9 | Monkey Bars |
+| 10 | Mainframe |
+| 11 | Headbang |
+| 12 | Journal |
+
+<Warning>
+  Font IDs above 12 have been observed but are unconfirmed. An unrecognized ID may cause the style to silently not apply, so verify by reading `display_name_styles` from the response.
+</Warning>

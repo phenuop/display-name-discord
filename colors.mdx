@@ -1,37 +1,42 @@
 ---
 title: "Discord Bot Display Name Colors: Decimal RGB Guide"
 sidebarTitle: "Colors"
-description: "display_name_colors accepts decimal RGB integers. Includes a 5-row swatch table, hex conversion helper, and a 5-stop gradient JSON example."
+description: "display_name_colors accepts decimal RGB integers. Includes a swatch table of known values, a hex conversion helper, and a 5-stop gradient JSON example."
 ---
 
-The `display_name_colors` field takes an array of integers where each integer is a decimal representation of an RGB color (i.e., `R × 65536 + G × 256 + B`). For a solid color effect, pass a single-element array. For gradient or multi-stop effects, pass multiple values.
+The `display_name_colors` field takes an array of integers, where each integer is the decimal form of an RGB color (`R × 65536 + G × 256 + B`). Pass a single-element array for a solid color, or multiple values for gradient effects.
+
+---
 
 ## Converting Hex to Decimal
 
-To convert a hex color like `#F10000` to decimal, parse the hex as a 24-bit integer: `0xF10000 = 15,728,640`. In JavaScript: `parseInt('F10000', 16)` or `0xF10000`.
+Parse the hex color as a 24-bit integer. For example, `#F10000` is `0xF10000`, which equals `15794176`.
 
 ```js hex-to-decimal.js
-// Convert hex string to decimal RGB integer
 const hexToDecimal = (hex) => parseInt(hex.replace('#', ''), 16);
 
-hexToDecimal('#F10000'); // 15728640
+hexToDecimal('#F10000'); // 15794176
 hexToDecimal('#FCFCFC'); // 16579836
 hexToDecimal('#000000'); // 0
 ```
 
+---
+
 ## Known Color Values
 
-| Decimal   | Hex       |
-|-----------|-----------|
-| 0         | #000000   |
-| 4737096   | #484848   |
-| 7105644   | #6C6C6C   |
-| 10263708  | #9C9C9C   |
-| 16579836  | #FCFCFC   |
+| Decimal | Hex |
+| --- | --- |
+| 0 | #000000 |
+| 4737096 | #484848 |
+| 7105644 | #6C6C6C |
+| 10263708 | #9C9C9C |
+| 16579836 | #FCFCFC |
+
+---
 
 ## Gradient Example
 
-Gradient effects (effect ID 2, or the unconfirmed ID 7) use multiple stops in the `colors` array — up to 5 values observed in community testing.
+Gradient effects (effect ID 2, or the unconfirmed ID 7) use multiple stops in the `colors` array. Up to 5 values have been observed working in community testing.
 
 ```json gradient-5-stop.json
 {
@@ -40,6 +45,6 @@ Gradient effects (effect ID 2, or the unconfirmed ID 7) use multiple stops in th
 }
 ```
 
-<Note>
-  The maximum number of elements in the `colors` array is unconfirmed. Five stops have been observed to work. Passing more may silently fail — always verify the applied styles by reading `display_name_styles` in the response.
-</Note>
+<Warning>
+  The maximum number of color stops is unconfirmed. Passing more than 5 may silently fail, so verify the applied styles by reading `display_name_styles` in the response.
+</Warning>

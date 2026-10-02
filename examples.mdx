@@ -4,13 +4,14 @@ sidebarTitle: "Examples"
 description: "JavaScript code examples using discord.js REST client to set and clear bot Display Name Styles per guild, including response verification."
 ---
 
-The examples below use the discord.js REST client (`client.rest`) and `Routes.guildMember` to set and clear Display Name Styles. Both patterns are drop-in — replace the font, effect, and color values with your desired IDs from the [Fonts](/fonts), [Effects](/effects), and [Colors](/colors) references. Because this feature is unofficial and reverse-engineered, always verify the response rather than trusting the HTTP status code alone.
+The examples below use the discord.js REST client (`client.rest`) and `Routes.guildMember` to set and clear Display Name Styles. Replace the font, effect, and color values with IDs from the [Fonts](/fonts), [Effects](/effects), and [Colors](/colors) references.
 
-## Setting and Clearing a Style
+---
 
-After patching, always verify the response `display_name_styles` matches what you sent — HTTP 200 alone does not guarantee the style was applied. To remove a style, pass `null` for all three fields.
+## Setting a Style
 
-<CodeGroup>
+After patching, verify that the response `display_name_styles` matches what you sent. HTTP 200 alone does not guarantee the style was applied.
+
 ```js setStyle.js
 const sig = (s) => s ? `${s.font_id}:${s.effect_id}:${(s.colors||[]).join(",")}` : "";
 
@@ -21,17 +22,23 @@ async function setStyle(client, guildId) {
 }
 ```
 
+---
+
+## Clearing a Style
+
+Pass `null` for all three fields.
+
 ```js clearStyle.js
 await client.rest.patch(Routes.guildMember(guildId), { body: {
   display_name_font_id:null, display_name_effect_id:null, display_name_colors:null }});
 ```
-</CodeGroup>
+
+---
 
 ## Applying Styles Across Multiple Guilds
 
-When rolling out a style change across every guild your bot belongs to, process guilds sequentially with a short delay between requests rather than firing them in parallel. The discord.js REST client also handles `429` rate limit responses for you.
+Process guilds one at a time with a short delay between requests rather than sending them in parallel. The discord.js REST client also handles `429` rate limit responses for you.
 
-<CodeGroup>
 ```js applyToAllGuilds.js
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -51,8 +58,5 @@ async function applyToAllGuilds(client) {
   }
 }
 ```
-</CodeGroup>
 
-<Note>
-  See [Gotchas](/gotchas) for other non-obvious behaviors, such as per-guild scoping and response verification.
-</Note>
+See [Gotchas](/gotchas) for other non-obvious behaviors.

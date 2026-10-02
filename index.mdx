@@ -1,28 +1,21 @@
 ---
 title: "Discord Bot Display Name Styles"
 sidebarTitle: "Home"
-description: "Community-reverse-engineered reference for Discord's undocumented bot Display Name Styles API — fonts, effects, and per-guild colors."
+description: "Community-reverse-engineered reference for Discord's undocumented bot Display Name Styles API: fonts, effects, and per-guild colors."
 ---
 
-Display Name Styles let a Discord bot set a custom font, animated/styled effect, and color scheme on its display name — separately per guild. This is an undocumented API discovered through community reverse-engineering. The feature works by patching three fields on the guild member endpoint.
+Display Name Styles let a Discord bot set a custom font, effect, and color scheme on its display name, separately for each guild. This is an undocumented API discovered through community reverse-engineering. It works by patching three fields on the guild member endpoint.
 
-<CardGroup cols={2}>
-  <Card title="Introduction" icon="book-open" href="/introduction">
-    What Display Name Styles are and how they work.
-  </Card>
-  <Card title="Endpoint" icon="code" href="/endpoint">
-    PATCH /guilds/{guild_id}/members/@me reference.
-  </Card>
-  <Card title="Fonts" icon="font" href="/fonts">
-    All 12 confirmed font IDs.
-  </Card>
-  <Card title="Effects" icon="sparkles" href="/effects">
-    Solid, Gradient, Neon, Toon, Pop, Glow, and more.
-  </Card>
-  <Card title="Colors" icon="palette" href="/colors">
-    Decimal RGB color values and gradient stops.
-  </Card>
-  <Card title="Gotchas" icon="triangle-exclamation" href="/gotchas">
-    Non-obvious behaviors and rate limits to know.
-  </Card>
-</CardGroup>
+---
+
+## Contents
+
+| Page | Description |
+| --- | --- |
+| [Introduction](/introduction) | What Display Name Styles are and how they work. |
+| [Gotchas](/gotchas) | Non-obvious behaviors and rate limits. |
+| [Endpoint](/endpoint) | `PATCH /guilds/{guild_id}/members/@me` reference. |
+| [Fonts](/fonts) | All 12 confirmed font IDs. |
+| [Effects](/effects) | Solid, Gradient, Neon, Toon, Pop, Glow, and more. |
+| [Colors](/colors) | Decimal RGB color values and gradient stops. |
+| [Examples](/examples) | discord.js code to set and clear styles. |
