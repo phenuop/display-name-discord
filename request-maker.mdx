@@ -150,94 +150,121 @@ export const RequestMaker = () => {
     setColors(next);
   };
 
-  const box = "border border-zinc-950/20 dark:border-white/20 p-3 mb-3";
-  const label = "block text-sm font-bold mb-1 text-zinc-950 dark:text-white";
-  const input = "w-full border border-zinc-950/30 dark:border-white/30 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white p-1 text-sm";
-  const btn = "border border-zinc-950/30 dark:border-white/30 px-2 py-1 text-sm text-zinc-950 dark:text-white bg-zinc-100 dark:bg-zinc-800";
+  const S = {
+    panel: { background: "#2B2D31", border: "1px solid #3F4147", borderRadius: 8, padding: 14, marginBottom: 12 },
+    label: { display: "block", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em", color: "#B5BAC1", marginBottom: 8 },
+    input: { width: "100%", background: "#1E1F22", color: "#F2F3F5", border: "1px solid #1E1F22", borderRadius: 4, padding: "8px 10px", fontSize: 14, outline: "none" },
+    btn: { background: "#4E5058", color: "#FFFFFF", border: "none", borderRadius: 4, padding: "6px 12px", fontSize: 13, fontWeight: 500, cursor: "pointer" },
+    btnPrimary: { background: "#5865F2", color: "#FFFFFF", border: "none", borderRadius: 4, padding: "6px 12px", fontSize: 13, fontWeight: 500, cursor: "pointer" },
+    swatch: { display: "flex", alignItems: "center", gap: 10, background: "#1E1F22", borderRadius: 6, padding: "6px 10px 6px 6px" },
+    colorInput: { width: 36, height: 36, border: "none", borderRadius: 4, padding: 0, background: "transparent", cursor: "pointer" },
+    mono: { fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 12 }
+  };
 
   return (
     <div className="not-prose">
-      <div className="mb-3 p-4" style={{ background: "#232428", border: "1px solid #3F4147" }}>
-        <div className="flex items-center gap-3">
+      <div style={{ background: "#232428", border: "1px solid #3F4147", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#5865F2", flexShrink: 0 }} />
           <div style={{ minWidth: 0 }}>
             <div style={Object.assign({ fontSize: 24, fontWeight: 600, lineHeight: 1.3, display: "inline-block", padding: "2px 4px" }, nameStyle)}>
               {name || "MyBot"}
             </div>
             <div style={{ fontSize: 12, color: "#B5BAC1" }}>
-              {clear
-                ? "No style"
-                : fontRow[1] + " / " + EFFECTS.find((e) => e[0] === effect)[1]}
+              {clear ? "No style" : fontRow[1] + " / " + EFFECTS.find((e) => e[0] === effect)[1]}
               <span style={{ marginLeft: 6, background: "#5865F2", color: "#fff", fontSize: 10, padding: "1px 4px", borderRadius: 3 }}>APP</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className={box}>
-        <label className={label}>Preview name</label>
-        <input className={input} value={name} maxLength={32} onChange={(e) => setName(e.target.value)} />
-        <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-white mt-2">
-          <input type="checkbox" checked={clear} onChange={(e) => setClear(e.target.checked)} />
+      <div style={S.panel}>
+        <label style={S.label}>Preview Name</label>
+        <input style={S.input} value={name} maxLength={32} onChange={(e) => setName(e.target.value)} />
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#DBDEE1", marginTop: 10, cursor: "pointer" }}>
+          <input type="checkbox" checked={clear} onChange={(e) => setClear(e.target.checked)} style={{ accentColor: "#5865F2", width: 16, height: 16 }} />
           Clear the style instead (send all three fields as null)
         </label>
       </div>
 
       {!clear && (
         <div>
-          <div className={box}>
-            <label className={label}>Font</label>
-            <select className={input} value={font} onChange={(e) => setFont(Number(e.target.value))}>
-              {FONTS.map((f) => (
-                <option key={f[0]} value={f[0]}>{f[0]}: {f[1]}</option>
-              ))}
-            </select>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div style={Object.assign({}, S.panel, { flex: "1 1 200px" })}>
+              <label style={S.label}>Font</label>
+              <select style={S.input} value={font} onChange={(e) => setFont(Number(e.target.value))}>
+                {FONTS.map((f) => (
+                  <option key={f[0]} value={f[0]}>{f[0]}: {f[1]}</option>
+                ))}
+              </select>
+            </div>
+            <div style={Object.assign({}, S.panel, { flex: "1 1 200px" })}>
+              <label style={S.label}>Effect</label>
+              <select style={S.input} value={effect} onChange={(e) => setEffect(Number(e.target.value))}>
+                {EFFECTS.map((f) => (
+                  <option key={f[0]} value={f[0]}>{f[0]}: {f[1]} ({f[2] === 1 ? "1 color" : "1 to 5 colors"})</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className={box}>
-            <label className={label}>Effect</label>
-            <select className={input} value={effect} onChange={(e) => setEffect(Number(e.target.value))}>
-              {EFFECTS.map((f) => (
-                <option key={f[0]} value={f[0]}>{f[0]}: {f[1]} ({f[2] === 1 ? "1 color" : "1 to 5 colors"})</option>
-              ))}
-            </select>
-          </div>
-
-          <div className={box}>
-            <label className={label}>Colors ({used} of {maxColors})</label>
-            <div className="flex flex-wrap gap-3 items-center">
+          <div style={S.panel}>
+            <label style={S.label}>Colors ({used} of {maxColors})</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {shown.map((c, i) => (
-                <div key={i} className="flex items-center gap-1">
-                  <input type="color" value={c} onChange={(e) => setColorAt(i, e.target.value.toUpperCase())} />
-                  <span className="text-xs font-mono text-zinc-950 dark:text-white">{c} = {toDec(c)}</span>
+                <div key={i} style={S.swatch}>
+                  <input type="color" value={c} style={S.colorInput} onChange={(e) => setColorAt(i, e.target.value.toUpperCase())} />
+                  <div style={{ lineHeight: 1.3 }}>
+                    <div style={Object.assign({ color: "#F2F3F5", fontWeight: 600 }, S.mono)}>{c}</div>
+                    <div style={Object.assign({ color: "#949BA4" }, S.mono)}>{toDec(c)}</div>
+                  </div>
                 </div>
               ))}
             </div>
             {maxColors > 1 && (
-              <div className="flex gap-2 mt-2">
-                <button className={btn} disabled={used >= 5} onClick={() => setCount(Math.min(5, used + 1))}>+ Add color</button>
-                <button className={btn} disabled={used <= 1} onClick={() => setCount(Math.max(1, used - 1))}>- Remove color</button>
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <button style={Object.assign({}, S.btnPrimary, used >= 5 ? { opacity: 0.5, cursor: "not-allowed" } : {})} disabled={used >= 5} onClick={() => setCount(Math.min(5, used + 1))}>+ Add Color</button>
+                <button style={Object.assign({}, S.btn, used <= 1 ? { opacity: 0.5, cursor: "not-allowed" } : {})} disabled={used <= 1} onClick={() => setCount(Math.max(1, used - 1))}>Remove Color</button>
               </div>
             )}
           </div>
         </div>
       )}
 
-      <div className={box}>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {LANGS.map((l) => (
-            <button
-              key={l[0]}
-              className={btn}
-              style={lang === l[0] ? { fontWeight: "bold", textDecoration: "underline" } : {}}
-              onClick={() => setLang(l[0])}
-            >
-              {l[1]}
-            </button>
-          ))}
-          <button className={btn} onClick={copy}>{copied ? "Copied!" : "Copy"}</button>
+      <div style={{ background: "#111214", border: "1px solid #3F4147", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#1A1B1E", borderBottom: "1px solid #2B2D31", padding: "0 8px" }}>
+          <div style={{ display: "flex", overflowX: "auto" }}>
+            {LANGS.map((l) => {
+              const active = lang === l[0];
+              return (
+                <button
+                  key={l[0]}
+                  onClick={() => setLang(l[0])}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    borderBottom: active ? "2px solid #5865F2" : "2px solid transparent",
+                    color: active ? "#FFFFFF" : "#949BA4",
+                    fontSize: 13,
+                    fontWeight: active ? 600 : 500,
+                    padding: "10px 12px",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {l[1]}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={copy}
+            style={{ background: copied ? "#248046" : "#2B2D31", color: "#FFFFFF", border: "1px solid #3F4147", borderRadius: 6, fontSize: 12, padding: "4px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
         </div>
-        <pre className="text-xs font-mono p-3 overflow-x-auto bg-zinc-100 dark:bg-zinc-900 text-zinc-950 dark:text-white whitespace-pre">{code}</pre>
+        <pre style={Object.assign({ margin: 0, padding: 16, overflowX: "auto", color: "#DBDEE1", background: "#111214", whiteSpace: "pre", lineHeight: 1.6 }, S.mono, { fontSize: 13 })}>{code}</pre>
       </div>
     </div>
   );
